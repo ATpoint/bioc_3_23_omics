@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM bioconductor/bioconductor_docker:RELEASE_3_23
 
 # R and Bioconductor configuration
@@ -14,7 +16,6 @@ RUN printf '%s\n' \
     >> /usr/local/lib/R/etc/Rprofile.site
 
 # MEME Suite for motif analysis (along with Bioc package "memes")
-
 RUN mkdir -p /tmp/meme-build \
     && curl -fSL https://meme-suite.org/meme/meme-software/5.5.9/meme-5.5.9.tar.gz \
         -o /tmp/meme-build/meme.tar.gz \
@@ -30,8 +31,10 @@ ENV PATH="/opt/meme/bin:/opt/meme/libexec/meme-5.5.9:${PATH}"
 # R and Bioconductor packages
 COPY pkgs_r.txt /tmp/install_r_pkgs.txt
 COPY install_r_pkgs.R /tmp/install_r_pkgs.R
-RUN Rscript /tmp/install_r_pkgs.R
 
+# Optional GitHub authentication to avoid API rate limits
+RUN --mount=type=secret,id=GITHUB_PAT,env=GITHUB_PAT \
+    Rscript /tmp/install_r_pkgs.R
 
 # Python and scverse environment
 # Create a shared virtual environment writable by the RStudio user.
@@ -43,10 +46,6 @@ RUN Rscript /tmp/install_py_reticulate.R \
     && printf '%s\n' \
         'RETICULATE_PYTHON=/opt/venvs/scverse/bin/python' \
         >> /usr/local/lib/R/etc/Renviron.site
-
-# Custom RStudio configuration
-COPY rstudio-prefs.json /home/rstudio/.config/rstudio/rstudio-prefs.json
-COPY rserver.conf /etc/rstudio/rserver.conf
 
 # Custom RStudio configuration
 COPY rstudio-prefs.json /home/rstudio/.config/rstudio/rstudio-prefs.json

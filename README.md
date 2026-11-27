@@ -1,29 +1,83 @@
 # bioc_3_23_omics
 
-A Docker-based RStudio environment for reproducible analyses. 
-Built on `bioconductor/bioconductor_docker:RELEASE_3_23` to keep R, Bioconductor, scientific software, and Python tools together in one portable (aka monolithic) environment.
+[![Build status](https://github.com/ATpoint/bioc_3_23_omics/actions/workflows/build.yml/badge.svg)](https://github.com/ATpoint/bioc_3_23_omics/actions)
+[![Docker version](https://img.shields.io/docker/v/atpoint/bioc_3_23_omics?sort=semver)](https://hub.docker.com/r/atpoint/bioc_3_23_omics/tags)
+[![Docker pulls](https://img.shields.io/docker/pulls/atpoint/bioc_3_23_omics)](https://hub.docker.com/r/atpoint/bioc_3_23_omics)
+![Architectures](https://img.shields.io/badge/architectures-amd64%20%7C%20arm64-blue)
+![Bioconductor](https://img.shields.io/badge/Bioconductor-3.23-blue)
+
+A Docker-based RStudio environment for reproducible bioinformatics and omics analyses, built on `bioconductor/bioconductor_docker:RELEASE_3_23`.
+
+The image combines R, Bioconductor, Python and scientific command-line software in a single portable environment.
 
 ## Contents
 
-- **R/Bioconductor:** Packages from `pkgs_r.txt`, installed by `install_r_pkgs.R`; fixed CRAN snapshot (2026-11-22) and Bioconductor container repositories.
-- **MEME Suite 5.5.9:** Compiled under `/opt/meme` for motif analysis; executables added to `PATH`.
-- **Python:** `scverse` virtual environment created through `reticulate`, with `scanpy`, `anndata`, `macs3`, and `snapatac2`.
-- **RStudio:** Customized preferences from `rstudio-prefs.json`.
+- **R and Bioconductor:** Packages defined in `pkgs_r.txt` and installed from source using `install_r_pkgs.R`.
+- **CRAN:** Fixed repository snapshot dated 2026-11-24.
+- **MEME Suite 5.5.9:** Compiled and installed under `/opt/meme`, with executables available on `PATH`.
+- **Python:** Shared `scverse` virtual environment managed through `reticulate`, including `scanpy`, `anndata`, `macs3` and `snapatac2`.
+- **RStudio Server:** Customized user preferences and server configuration.
 
-The software is separated into Docker build layers to make updates easier and reuse cached steps. The CRAN snapshot is fixed, but GitHub and Python packages are not fully version-pinned.
+## Automated builds
 
-## Build
+GitHub Actions automatically builds the Docker image whenever relevant source files or installation scripts change. Documentation-only changes do not trigger a rebuild.
 
-From the directory containing the Dockerfile and installation scripts:
+- Native AMD64 builds for Intel and AMD systems.
+- Native ARM64 builds for Apple Silicon and other ARM systems.
+- Incremental image versioning (`1.0`, `1.1`, `1.2`, etc.).
+- Automated publication of successful multi-architecture builds to Docker Hub.
+- GitHub API authentication during package installation using temporary Docker build secrets.
+
+Docker automatically selects the appropriate architecture when pulling the image.
+
+All images are referenced using explicit version tags.
+
+- [Available Docker image versions](https://hub.docker.com/r/atpoint/bioc_3_23_omics/tags)
+- [GitHub Actions build history](https://github.com/ATpoint/bioc_3_23_omics/actions)
+
+## Pull
+
+Select a published version from Docker Hub and specify it explicitly:
 
 ```bash
-docker build --progress=plain -t atpoint/bioc_3_23_omics:1.0 .
+VERSION="1.0"
+docker pull atpoint/bioc_3_23_omics:${VERSION}
 ```
 
 ## Run RStudio
 
 ```bash
-docker run -d --name bioc-omics -p 8787:8787 -e PASSWORD=change-me -v "$(pwd)":/projectdir atpoint/bioc_3_23_omics:1.0
+VERSION="1.0"
+
+docker run -d --name bioc-omics \
+  -p 8787:8787 \
+  -e PASSWORD=change-me \
+  -v "$(pwd)":/projectdir \
+  atpoint/bioc_3_23_omics:${VERSION}
 ```
 
-Open <http://localhost:8787> and sign in with username `rstudio` and the password supplied above. The current host directory is mounted at `/projectdir`, so project files persist outside the container.
+Open http://localhost:8787 and sign in with username `rstudio` and the password supplied above.
+
+The current host directory is mounted at `/projectdir`, allowing project files to persist independently of the container.
+
+## Build locally
+
+```bash
+docker build --progress=plain -t bioc-omics:local .
+```
+
+Optionally, an existing GitHub token can be supplied to avoid API rate limits:
+
+```bash
+docker build --progress=plain \
+  --secret id=GITHUB_PAT,env=GITHUB_PAT \
+  -t bioc-omics:local .
+```
+
+## Reproducibility
+
+The CRAN snapshot and MEME Suite version are fixed. Versioned Docker images provide a reusable software environment for individual analyses.
+
+GitHub and Python packages are not necessarily pinned to specific commits or versions. Consequently, rebuilding the same Dockerfile at a later date may produce a different software environment.
+
+For reproducible analyses, retain the specific published image version or digest.
