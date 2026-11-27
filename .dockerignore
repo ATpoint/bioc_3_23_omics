@@ -1,0 +1,7 @@
+*
+!Dockerfile
+!pkgs_r.txt
+!install_r_pkgs.R
+!install_py_reticulate.R
+!rstudio-prefs.json
+!rserver.conf

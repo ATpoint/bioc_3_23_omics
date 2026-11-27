@@ -1,0 +1,15 @@
+{
+    "restore_source_documents": false,
+    "wrap_tab_navigation": false,
+    "save_workspace": "never",
+    "load_workspace": false,
+    "initial_working_directory": "/projectdir/",
+    "always_save_history": false,
+    "restore_last_project": false,
+    "editor_theme": "Idle Fingers",
+    "soft_wrap_rmd_files": false,
+    "rmd_chunk_output_inline": false,
+    "auto_run_setup_chunk": false,
+    "hide_console_on_chunk_execute": false,
+    "posix_terminal_shell": "bash"
+}
