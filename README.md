@@ -1,6 +1,6 @@
 # bioc_3_23_omics
 
-[![Build status](https://github.com/ATpoint/bioc_3_23_omics/actions/workflows/build.yml/badge.svg)](https://github.com/ATpoint/bioc_3_23_omics/actions)
+[![Build status](https://github.com/ATpoint/bioc_3_23_omics/actions/workflows/docker.yml/badge.svg)](https://github.com/ATpoint/bioc_3_23_omics/actions)
 [![Docker version](https://img.shields.io/docker/v/atpoint/bioc_3_23_omics?sort=semver)](https://hub.docker.com/r/atpoint/bioc_3_23_omics/tags)
 [![Docker pulls](https://img.shields.io/docker/pulls/atpoint/bioc_3_23_omics)](https://hub.docker.com/r/atpoint/bioc_3_23_omics)
 ![Architectures](https://img.shields.io/badge/architectures-amd64%20%7C%20arm64-blue)
